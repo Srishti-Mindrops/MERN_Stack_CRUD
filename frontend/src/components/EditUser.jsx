@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
@@ -8,70 +9,80 @@ const EditUser = () => {
   const [gender, setGender] = useState("Female");
 
   const navigate = useNavigate();
-
   const { id } = useParams();
 
   useEffect(() => {
     const getUser = async () => {
       try {
-        const res = await axios.get("http://localhost:5080/users/" + id);
+        const res = await axios.get(`/users/${id}`);
         setName(res.data.name);
         setEmail(res.data.email);
         setGender(res.data.gender);
       } catch (error) {
         console.log(error);
+        alert("Unable to load user details.");
       }
     };
-    getUser();
-  }, []);
 
-  const updateUser = async (e)=>{
+    getUser();
+  }, [id]);
+
+  const updateUser = async (e) => {
     e.preventDefault();
 
-    try{
-        await axios.patch(`http://localhost:5080/users/${id}` ,{
-            name,
-            email,
-            gender
-        })
-        navigate("/")
-    }catch(error){
-        console.log(error)
+    try {
+      await axios.patch(`/users/${id}`, {
+        name,
+        email,
+        gender,
+      });
+
+      alert("User updated successfully!");
+      navigate("/");
+    } catch (error) {
+      console.log(error);
+      alert("Failed to update user.");
     }
-  }
+  };
 
   return (
     <div className="columns">
       <div className="column is-half">
+        <h2 className="title is-4">Edit User</h2>
+
         <form onSubmit={updateUser}>
           <div className="field">
-            <label className="label">نام</label>
+            <label className="label">Name</label>
             <div className="control">
               <input
                 type="text"
                 name="name"
                 className="input"
-                placeholder="نام"
+                placeholder="Enter your name"
                 value={name}
+                required
                 onChange={(e) => setName(e.target.value)}
               />
             </div>
           </div>
+
           <div className="field">
-            <label className="label">ایمیل</label>
+            <label className="label">Email</label>
             <div className="control">
               <input
-                type="text"
+                type="email"
                 name="email"
                 className="input"
-                placeholder="ایمیل"
+                placeholder="Enter your email"
                 value={email}
+                required
                 onChange={(e) => setEmail(e.target.value)}
               />
             </div>
           </div>
+
           <div className="field">
-            <label className="label">جنسیت</label>
+            <label className="label">Gender</label>
             <div className="control">
               <div className="select is-fullwidth">
                 <select
@@ -79,18 +90,17 @@ const EditUser = () => {
                   value={gender}
                   onChange={(e) => setGender(e.target.value)}
                 >
-                  <option value="Female">زن</option>
-                  <option value="Male">مرد</option>
+                  <option value="Female">Female</option>
+                  <option value="Male">Male</option>
                 </select>
               </div>
             </div>
           </div>
 
-          {/* Button */}
           <div className="field">
             <div className="control">
               <button type="submit" className="button is-success">
-                ذخیره
+                Update User
               </button>
             </div>
           </div>
@@ -101,3 +111,4 @@ const EditUser = () => {
 };
 
 export default EditUser;
+
